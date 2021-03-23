@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
+  "name": "semver",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,14 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/madhead/semver.git"
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "github actions",
+    "semver",
+    "utils"
   ],
-  "author": "",
+  "author": "madhead <siarhei.krukau@gmail.com> (https://madhead.me)",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6"

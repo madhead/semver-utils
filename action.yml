@@ -1,11 +1,29 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: semver
+author: madhead <siarhei.krukau@gmail.com>
+description: One-stop shop for working with semantic versions in your workflows
 inputs:
-  milliseconds: # change this
+  version:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: A version to process
+  compare-to:
+    required: false
+    description: A version to compare with, if any
+outputs:
+  major:
+    description: Version's major number
+  minor:
+    description: Version's minor number
+  patch:
+    description: Version's patch number
+  pre-releas:
+    description: Version's pre-release
+  build:
+    description: Version's build
+  comparison-result:
+    description: If the compare-to was provided, this output will contain "<" if comes after the version, ">" if it preceeds it, and "=" if they are equal
 runs:
   using: 'node12'
   main: 'dist/index.js'
+branding:
+  icon: hash
+  color: gray-dark
