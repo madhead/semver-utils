@@ -18,3 +18,14 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           file_pattern: dist/**
+
+      - run: node -p "'::set-output name=version::' + require('./package.json').version"
+        id: version
+
+      - run: git tag --force ${{ steps.version.outputs.version }}
+      # Tag with major.minor.patch
+      # Tag with major.minor
+      # Tag with major
+      # Tag with latest
+
+      - run: git push --tags origin
