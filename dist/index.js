@@ -41,7 +41,9 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const version = core.getInput('version');
+            const compareTo = core.getInput('compare-to');
             core.info(`Version: ${version}`);
+            core.info(`Compare to: ${compareTo}`);
         }
         catch (error) {
             core.setFailed(error.message);
