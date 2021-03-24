@@ -18,3 +18,8 @@ jobs:
       - uses: ./
         with:
           version: 1.0.0
+
+      - uses: ./
+        with:
+          version: 1.0.0
+          compare-to: 2.0.0
