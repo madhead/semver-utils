@@ -1,0 +1,20 @@
+name: Default
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  default:
+    name: Default
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: npm install
+      - run: npm run all
+
+      - uses: ./
+        with:
+          version: 1.0.0
