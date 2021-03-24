@@ -16,10 +16,16 @@ jobs:
       - run: npm run all
 
       - uses: ./
+        id: test-1
         with:
           version: 1.0.0
+      - run: '[[ "1" == "${{ steps.test-1.outputs.major }}" ]]'
+      - run: '[[ "0" == "${{ steps.test-1.outputs.minor }}" ]]'
+      - run: '[[ "0" == "${{ steps.test-1.outputs.patch }}" ]]'
 
       - uses: ./
+        id: test-2
         with:
           version: 1.0.0
           compare-to: 2.0.0
+      - run: '[[ "<" == "${{ steps.test-2.outputs.comparison-result }}" ]]'

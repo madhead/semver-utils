@@ -15,10 +15,6 @@ outputs:
     description: Version's minor number
   patch:
     description: Version's patch number
-  pre-releas:
-    description: Version's pre-release
-  build:
-    description: Version's build
   comparison-result:
     description: If the compare-to was provided, this output will contain "<" if comes after the version, ">" if it preceeds it, and "=" if they are equal
 runs:
