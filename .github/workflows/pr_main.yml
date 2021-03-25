@@ -3,13 +3,15 @@ name: PR to main
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   pr_main:
     name: PR to main
     runs-on: ubuntu-latest
     steps:
+      - uses: hmarr/debug-action@v2
+
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.base.sha }}
@@ -25,7 +27,7 @@ jobs:
       - uses: madhead/semver-utils@latest
         id: comparison
         with:
-          version: ${{ steps.new-version.outputs.value }}
-          compare-to: ${{ steps.base-version.outputs.value }}
+          version: ${{ steps.new-version.outputs.version }}
+          compare-to: ${{ steps.base-version.outputs.version }}
 
       - run: '[[ ">" == "${{ steps.comparison.outputs.comparison-result }}" ]]'
