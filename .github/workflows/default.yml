@@ -29,3 +29,10 @@ jobs:
           version: 1.0.0
           compare-to: 2.0.0
       - run: '[[ "<" == "${{ steps.test-2.outputs.comparison-result }}" ]]'
+
+      - uses: ./
+        id: test-3
+        with:
+          version: 1.2.3
+          satisfies: 1.x
+      - run: '[[ "true" == "${{ steps.test-3.outputs.satisfies }}" ]]'

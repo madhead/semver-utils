@@ -19,11 +19,20 @@ One-stop shop for working with semantic versions in your GitHub Actions workflow
 
     # A version to compare against
     compare-to: 2.1.0
+
+    # A range to check agains
+    satisfies: 1.x
 - run: |
     echo "${{ steps.version.outputs.major }}"             # 1
     echo "${{ steps.version.outputs.minor }}"             # 2
     echo "${{ steps.version.outputs.patch }}"             # 3
+
     echo "${{ steps.version.outputs.comparison-result }}" # <
+
+    echo "${{ steps.version.outputs.satisfies }}"         # true
 ```
 
-If any of the inputs (`version` or `compare-to`) cannot be parsed, it is just silently ignored. This action tries its best not to fail.
+If any of the inputs cannot be parsed, it is just silently ignored.
+This action tries its best not to fail.
+
+See how this action uses itself to check if a PR to main increments the version: [`pr_main.yml`](.github/workflows/pr_main.yml)

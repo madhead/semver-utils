@@ -8,6 +8,9 @@ inputs:
   compare-to:
     required: false
     description: A version to compare with, if any
+  satisfies:
+    required: false
+    description: A range to check agains
 outputs:
   major:
     description: Version's major number
@@ -17,6 +20,8 @@ outputs:
     description: Version's patch number
   comparison-result:
     description: If the compare-to was provided, this output will contain "<" if comes after the version, ">" if it preceeds it, and "=" if they are equal
+  satisfies:
+    description: true if the version satisfies the range
 runs:
   using: 'node12'
   main: 'dist/index.js'
