@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/madhead/semver-utils/actions">
-    <img alt="madhead/semver-utils status" src="https://github.com/actions/madhead/semver-utils/default/badge.svg">
+    <img alt="madhead/semver-utils status" src="https://github.com/madhead/semver-utils/actions/workflows/default.yml/badge.svg">
   </a>
 </p>
 
