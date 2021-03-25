@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {parse} from 'semver'
+import {parse, satisfies} from 'semver'
 
 async function run(): Promise<void> {
   try {
@@ -17,20 +17,24 @@ async function run(): Promise<void> {
     const compareToInput: string = core.getInput('compare-to')
     const compareTo = parse(compareToInput)
 
-    if (compareTo == null) {
-      return
+    if (compareTo != null) {
+      switch (version.compare(compareTo)) {
+        case -1:
+          core.setOutput('comparison-result', '<')
+          break
+        case 0:
+          core.setOutput('comparison-result', '=')
+          break
+        case 1:
+          core.setOutput('comparison-result', '>')
+          break
+      }
     }
 
-    switch (version.compare(compareTo)) {
-      case -1:
-        core.setOutput('comparison-result', '<')
-        break
-      case 0:
-        core.setOutput('comparison-result', '=')
-        break
-      case 1:
-        core.setOutput('comparison-result', '>')
-        break
+    const satisfiesRangeInput: string = core.getInput('satisfies')
+
+    if (satisfiesRangeInput) {
+      core.setOutput('satisfies', satisfies(version, satisfiesRangeInput))
     }
   } catch (error) {
     core.setFailed(error.message)

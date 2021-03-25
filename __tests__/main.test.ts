@@ -1,6 +1,7 @@
 import { execPath } from 'process'
 import { execFileSync } from 'child_process'
 import { join } from 'path'
+import { coerce } from 'semver'
 
 const data = [
   { version: 'Forty-two', valid: false },
@@ -61,12 +62,11 @@ data.forEach(item => {
       [join(__dirname, '..', 'lib', 'main.js')],
       {
         env: {
-          'INPUT_VERSION': item.version,
+          INPUT_VERSION: item.version,
           'INPUT_COMPARE-TO': item.compareTo
         }
       }
-    )
-      .toString()
+    ).toString()
 
     if (item.valid) {
       if (item.compareToValid) {
@@ -83,6 +83,47 @@ data.forEach(item => {
       }
     } else {
       expect(stdout).toBe('')
+    }
+  })
+})
+
+const satisfiesData = [
+  { version: '1.2.3', range: '', result: undefined },
+
+  { version: '1.2.3', range: '*', result: true },
+  { version: '1.2.3', range: '>1.0.0', result: true },
+  { version: '1.2.3', range: '<2.0.0', result: true },
+  { version: '1.2.3', range: '>=1.2.3', result: true },
+  { version: '1.2.3', range: '<=1.2.3', result: true },
+  { version: '1.2.3', range: '=1.2.3', result: true },
+  { version: '1.2.3', range: '>1.0.0 <2.0.0', result: true },
+  { version: '1.2.3', range: '1.2.x', result: true },
+  { version: '1.2.3', range: '1.x', result: true },
+
+  { version: '2.2.3', range: '<2.0.0', result: false },
+  { version: '2.2.3', range: '=1.2.3', result: false },
+  { version: '2.2.3', range: '>1.0.0 <2.0.0', result: false },
+  { version: '2.2.3', range: '1.2.x', result: false },
+  { version: '2.2.3', range: '1.x', result: false },
+]
+
+satisfiesData.forEach(item => {
+  test(`satisfies(${item.version}, ${item.range})`, () => {
+    const stdout = execFileSync(
+      execPath,
+      [join(__dirname, '..', 'lib', 'main.js')],
+      {
+        env: {
+          INPUT_VERSION: item.version,
+          INPUT_SATISFIES: item.range
+        }
+      }
+    ).toString()
+
+    if (item.result !== undefined) {
+      expect(stdout).toContain(`::set-output name=satisfies::${item.result}`)
+    } else {
+      expect(stdout).not.toContain('satisfies')
     }
   })
 })
