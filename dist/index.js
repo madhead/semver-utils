@@ -51,19 +51,22 @@ function run() {
             core.setOutput('patch', version.patch);
             const compareToInput = core.getInput('compare-to');
             const compareTo = semver_1.parse(compareToInput);
-            if (compareTo == null) {
-                return;
+            if (compareTo != null) {
+                switch (version.compare(compareTo)) {
+                    case -1:
+                        core.setOutput('comparison-result', '<');
+                        break;
+                    case 0:
+                        core.setOutput('comparison-result', '=');
+                        break;
+                    case 1:
+                        core.setOutput('comparison-result', '>');
+                        break;
+                }
             }
-            switch (version.compare(compareTo)) {
-                case -1:
-                    core.setOutput('comparison-result', '<');
-                    break;
-                case 0:
-                    core.setOutput('comparison-result', '=');
-                    break;
-                case 1:
-                    core.setOutput('comparison-result', '>');
-                    break;
+            const satisfiesRangeInput = core.getInput('satisfies');
+            if (satisfiesRangeInput) {
+                core.setOutput('satisfies', semver_1.satisfies(version, satisfiesRangeInput));
             }
         }
         catch (error) {
