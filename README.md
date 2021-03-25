@@ -1,17 +1,17 @@
 <p align="center">
-  <a href="https://github.com/madhead/semver/actions">
-    <img alt="madhead/semver status" src="https://github.com/actions/madhead/semver/default/badge.svg">
+  <a href="https://github.com/madhead/semver-utils/actions">
+    <img alt="madhead/semver-utils status" src="https://github.com/actions/madhead/semver-utils/default/badge.svg">
   </a>
 </p>
 
-# madhead/semver
+# madhead/semver-utils
 
 One-stop shop for working with semantic versions in your GitHub Actions workflows.
 
 ## Usage
 
 ```yml
-- uses: madhead/semver@latest
+- uses: madhead/semver-utils@latest
   id: version
   with:
     # A version to work with

@@ -1,5 +1,5 @@
 {
-  "name": "semver",
+  "name": "semver-utils",
   "version": "1.0.0",
   "private": true,
   "description": "One-stop shop for working with semantic versions in your workflows",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/madhead/semver.git"
+    "url": "git+https://github.com/madhead/semver-utils.git"
   },
   "keywords": [
     "actions",
