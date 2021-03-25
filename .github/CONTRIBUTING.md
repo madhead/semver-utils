@@ -6,10 +6,10 @@ Before you begin:
 
 - This project is powered by [TypeScript](https://www.typescriptlang.org), [Jest](https://jestjs.io/), [Node.js](https://nodejs.org) and [GitHub Actions](https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions).
 - Have you read the [code of conduct](CODE_OF_CONDUCT.md)?
-- Check out the [existing issues](https://github.com/madhead/semver/issues).
+- Check out the [existing issues](https://github.com/madhead/semver-utils/issues).
 
 Don't see your issue?
-[Open](https://github.com/madhead/semver/issues/new) one.
+[Open](https://github.com/madhead/semver-utils/issues/new) one.
 
 ## Ready to make a change?
 
@@ -58,7 +58,7 @@ Congratulations!
 
 Labels can help you find an issue you'd like to help with.
 
-- The [`help wanted` label](https://github.com/madhead/semver/labels/help%20wanted) is for problems or updates that anyone in the community can start working on.
-- The [`good first issue` label](https://github.com/madhead/semver/labels/good%20first%20issue) is for problems or updates we think are ideal for beginners.
-- The [`ci` label](https://github.com/madhead/semver/labels/CI%2FCD) is for problems or updates in the testing, releasing & publishing process.
+- The [`help wanted` label](https://github.com/madhead/semver-utils/labels/help%20wanted) is for problems or updates that anyone in the community can start working on.
+- The [`good first issue` label](https://github.com/madhead/semver-utils/labels/good%20first%20issue) is for problems or updates we think are ideal for beginners.
+- The [`ci` label](https://github.com/madhead/semver-utils/labels/CI%2FCD) is for problems or updates in the testing, releasing & publishing process.
   These will usually require some knowledge of Jest, TypeScript, Node.js, NPM or Github Actions to fix.

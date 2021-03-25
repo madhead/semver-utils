@@ -1,4 +1,4 @@
-name: semver-tools
+name: semver-utils
 author: madhead <siarhei.krukau@gmail.com>
 description: One-stop shop for working with semantic versions in your workflows
 inputs:
