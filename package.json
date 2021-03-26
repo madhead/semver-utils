@@ -1,6 +1,6 @@
 {
   "name": "semver-utils",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
