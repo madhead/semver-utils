@@ -9,9 +9,8 @@ jobs:
   pr_main:
     name: PR to main
     runs-on: ubuntu-latest
+    if: ${{ github.event.sender.login != 'dependabot[bot]' }}
     steps:
-      - uses: hmarr/debug-action@v2
-
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.base.sha }}
