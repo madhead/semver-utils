@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RELEASES_GITHUB_TOKEN }}
 
       - run: npm install
       - run: npm run all
@@ -32,8 +34,4 @@ jobs:
       - run: git tag --force ${{ steps.parsedVersion.outputs.major }}
       - run: git tag --force 'latest'
 
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.RELEASES_GITHUB_TOKEN }}
-          tags: true
-          force: true
+      - run: git push --force --tags origin
