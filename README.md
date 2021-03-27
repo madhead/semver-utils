@@ -21,7 +21,7 @@ A wrapper around [semver](https://www.npmjs.com/package/semver), so read [its do
     # A version to compare against
     compare-to: 2.1.0
 
-    # A range to check agains
+    # A range to check against
     satisfies: 1.x
 - run: |
     echo "${{ steps.version.outputs.major }}"             # 1
