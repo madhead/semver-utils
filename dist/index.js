@@ -39,16 +39,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const semver_1 = __nccwpck_require__(1383);
 function run() {
+    var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const versionInput = core.getInput('version');
             const version = semver_1.parse(versionInput);
-            if (version == null) {
+            if (version === null) {
                 return;
             }
             core.setOutput('major', version.major);
             core.setOutput('minor', version.minor);
             core.setOutput('patch', version.patch);
+            const identifierInput = core.getInput('identifier');
+            let identifier = undefined;
+            if (identifierInput.trim() !== '') {
+                identifier = identifierInput;
+            }
+            core.setOutput('inc-major', (_a = semver_1.parse(versionInput)) === null || _a === void 0 ? void 0 : _a.inc('major', identifier).format());
+            core.setOutput('inc-premajor', (_b = semver_1.parse(versionInput)) === null || _b === void 0 ? void 0 : _b.inc('premajor', identifier).format());
+            core.setOutput('inc-minor', (_c = semver_1.parse(versionInput)) === null || _c === void 0 ? void 0 : _c.inc('minor', identifier).format());
+            core.setOutput('inc-preminor', (_d = semver_1.parse(versionInput)) === null || _d === void 0 ? void 0 : _d.inc('preminor', identifier).format());
+            core.setOutput('inc-patch', (_e = semver_1.parse(versionInput)) === null || _e === void 0 ? void 0 : _e.inc('patch', identifier).format());
+            core.setOutput('inc-prepatch', (_f = semver_1.parse(versionInput)) === null || _f === void 0 ? void 0 : _f.inc('prepatch', identifier).format());
+            core.setOutput('inc-prerelease', (_g = semver_1.parse(versionInput)) === null || _g === void 0 ? void 0 : _g.inc('prerelease', identifier).format());
             if (version.build.length > 0) {
                 core.setOutput('build', version.build.join('.'));
                 core.setOutput('build-parts', version.build.length);
