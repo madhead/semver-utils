@@ -11,6 +11,9 @@ inputs:
   satisfies:
     required: false
     description: A range to check against
+  identifier:
+    required: false
+    description: An identifier to pass to the semver's inc function
 outputs:
   major:
     description: Version's major number
@@ -30,6 +33,20 @@ outputs:
     description: If the compare-to was provided, this output will contain "<" if comes after the version, ">" if it preceeds it, and "=" if they are equal
   satisfies:
     description: true if the version satisfies the given range
+  inc-major:
+    description: A result of the call of the semver's `inc` function with `major` increment
+  inc-premajor:
+    description: A result of the call of the semver's `inc` function with `premajor` increment
+  inc-minor:
+    description: A result of the call of the semver's `inc` function with `minor` increment
+  inc-preminor:
+    description: A result of the call of the semver's `inc` function with `preminor` increment
+  inc-patch:
+    description: A result of the call of the semver's `inc` function with `patch` increment
+  inc-prepatch:
+    description: A result of the call of the semver's `inc` function with `prepatch` increment
+  inc-prerelease:
+    description: A result of the call of the semver's `inc` function with `prerelease` increment
 runs:
   using: 'node12'
   main: 'dist/index.js'

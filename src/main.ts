@@ -6,13 +6,28 @@ async function run(): Promise<void> {
     const versionInput = core.getInput('version')
     const version = parse(versionInput)
 
-    if (version == null) {
+    if (version === null) {
       return
     }
 
     core.setOutput('major', version.major)
     core.setOutput('minor', version.minor)
     core.setOutput('patch', version.patch)
+
+    const identifierInput = core.getInput('identifier')
+    let identifier = undefined
+
+    if (identifierInput.trim() !== '') {
+      identifier = identifierInput
+    }
+
+    core.setOutput('inc-major', parse(versionInput)?.inc('major', identifier).format())
+    core.setOutput('inc-premajor', parse(versionInput)?.inc('premajor', identifier).format())
+    core.setOutput('inc-minor', parse(versionInput)?.inc('minor', identifier).format())
+    core.setOutput('inc-preminor', parse(versionInput)?.inc('preminor', identifier).format())
+    core.setOutput('inc-patch', parse(versionInput)?.inc('patch', identifier).format())
+    core.setOutput('inc-prepatch', parse(versionInput)?.inc('prepatch', identifier).format())
+    core.setOutput('inc-prerelease', parse(versionInput)?.inc('prerelease', identifier).format())
 
     if (version.build.length > 0) {
       core.setOutput('build', version.build.join('.'))

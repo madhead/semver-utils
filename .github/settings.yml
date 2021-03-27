@@ -1,0 +1,49 @@
+repository:
+  name: semver-utils
+  description: One-stop shop for working with semantic versions in your GitHub Actions workflows
+  topics: github-actions, actions, semver, semantic-versions, utils
+  private: false
+  has_wiki: false
+  has_issues: true
+  has_projects: false
+  default_branch: main
+  allow_merge_commit: true
+  allow_squash_merge: false
+  allow_rebase_merge: true
+labels:
+  - name: bug
+    color: '#D73A4A'
+    description: Something isn't working
+  - name: chore
+    color: '#C49307'
+    description: Boring, unpleasant, but easy tasks
+  - name: CI/CD
+    color: '#95CD57'
+    description: Continious integration & delivery
+  - name: dependencies
+    color: '#0366D6'
+    description: Pull requests that update a dependency file
+  - name: documentation
+    color: '#0075CA'
+    description: Improvements or additions to documentation
+  - name: duplicate
+    color: '#CFD3D7'
+    description: This issue or pull request already exists
+  - name: enhancement
+    color: '#A2EEEF'
+    description: New feature or request
+  - name: good first issue
+    color: '#7057FF'
+    description: Good for newcomers
+  - name: help wanted
+    color: '#008672'
+    description: Extra attention is needed
+  - name: invalid
+    color: '#E4E669'
+    description: This doesn't seem right
+  - name: question
+    color: '#D876E3'
+    description: Further information is requested
+  - name: wontfix
+    color: '#FFFFFF'
+    description: This will not be worked on
