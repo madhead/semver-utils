@@ -49,6 +49,13 @@ function run() {
             core.setOutput('major', version.major);
             core.setOutput('minor', version.minor);
             core.setOutput('patch', version.patch);
+            if (version.build.length > 0) {
+                core.setOutput('build', version.build.join('.'));
+                core.setOutput('build-parts', version.build.length);
+                version.build.forEach((buildPart, index) => {
+                    core.setOutput(`build-${index}`, buildPart);
+                });
+            }
             const compareToInput = core.getInput('compare-to');
             const compareTo = semver_1.parse(compareToInput);
             if (compareTo != null) {
