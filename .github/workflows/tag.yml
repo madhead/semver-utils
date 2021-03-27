@@ -9,6 +9,11 @@ jobs:
   tag:
     name: Tag
     runs-on: ubuntu-latest
+    env:
+      GIT_AUTHOR_NAME: madhead
+      GIT_AUTHOR_EMAIL: siarhei.krukau@gmail.com
+      GIT_COMMITTER_NAME: madhead
+      GIT_COMMITTER_EMAIL: siarhei.krukau@gmail.com
     steps:
       - uses: actions/checkout@v2
         with:
