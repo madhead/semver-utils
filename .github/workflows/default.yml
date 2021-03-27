@@ -33,6 +33,11 @@ jobs:
       - uses: ./
         id: test-3
         with:
-          version: 1.2.3
+          version: 1.2.3+4.5.6
           satisfies: 1.x
       - run: '[[ "true" == "${{ steps.test-3.outputs.satisfies }}" ]]'
+      - run: '[[ "4.5.6" == "${{ steps.test-3.outputs.build }}" ]]'
+      - run: '[[ "3" == "${{ steps.test-3.outputs.build-parts }}" ]]'
+      - run: '[[ "4" == "${{ steps.test-3.outputs.build-0 }}" ]]'
+      - run: '[[ "5" == "${{ steps.test-3.outputs.build-1 }}" ]]'
+      - run: '[[ "6" == "${{ steps.test-3.outputs.build-2 }}" ]]'
