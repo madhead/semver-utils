@@ -39,5 +39,6 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{ steps.parsedVersion.outputs.major }}.${{ steps.parsedVersion.outputs.minor }}.${{ steps.parsedVersion.outputs.patch }}
+          tag_name: ${{ steps.parsedVersion.outputs.major }}.${{ steps.parsedVersion.outputs.minor }}.${{ steps.parsedVersion.outputs.patch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
