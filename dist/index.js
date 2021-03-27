@@ -56,6 +56,13 @@ function run() {
                     core.setOutput(`build-${index}`, buildPart);
                 });
             }
+            if (version.prerelease.length > 0) {
+                core.setOutput('prerelease', version.prerelease.join('.'));
+                core.setOutput('prerelease-parts', version.prerelease.length);
+                version.prerelease.forEach((prereleasePart, index) => {
+                    core.setOutput(`prerelease-${index}`, prereleasePart);
+                });
+            }
             const compareToInput = core.getInput('compare-to');
             const compareTo = semver_1.parse(compareToInput);
             if (compareTo != null) {
