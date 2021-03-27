@@ -32,4 +32,8 @@ jobs:
       - run: git tag --force ${{ steps.parsedVersion.outputs.major }}
       - run: git tag --force 'latest'
 
-      - run: git push --force --tags origin
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.RELEASES_GITHUB_TOKEN }}
+          tags: true
+          force: true
