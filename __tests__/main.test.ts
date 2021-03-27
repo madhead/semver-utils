@@ -29,6 +29,11 @@ const data: TestData[] = [
   {version: '1.2.3', compareTo: '1.2.3'},
   {version: '1.2.3', compareTo: '1.2.3+42'},
   {version: '1.2.3', compareTo: '1.2.3+42.24'},
+  {version: '1.2.3', compareTo: '1.2.3-42'},
+  {version: '1.2.3', compareTo: '1.2.3-42.24'},
+  {version: '1.2.3', compareTo: '1.2.3-alpha'},
+  {version: '1.2.3', compareTo: '1.2.3-beta'},
+  {version: '1.2.3', compareTo: '1.2.4-alpha+3'},
   {version: '1.2.3', compareTo: '1.2.4'},
   {version: '1.2.3', compareTo: '1.3.0'},
   {version: '1.2.3', compareTo: '2.0.0'},
@@ -39,9 +44,13 @@ const data: TestData[] = [
   {version: '1.2.3', compareTo: '    '},
   {version: '1.2.3', compareTo: 'XXX'},
   {version: '1.2.3', satisfies: '>1.0.0'},
+  {version: '1.2.3-alpha', satisfies: '>1.0.0'},
   {version: '1.2.3', satisfies: '<2.0.0'},
+  {version: '1.2.3-alpha', satisfies: '<2.0.0'},
   {version: '1.2.3', satisfies: '>=1.2.3'},
+  {version: '1.2.3-alpha', satisfies: '>=1.2.3'},
   {version: '1.2.3', satisfies: '<=1.2.3'},
+  {version: '1.2.3-alpha', satisfies: '<=1.2.3'},
   {version: '1.2.3', satisfies: '=1.2.3'},
   {version: '1.2.3', satisfies: '>1.0.0 <2.0.0'},
   {version: '1.2.3', satisfies: '1.2.x'},
@@ -59,7 +68,16 @@ const data: TestData[] = [
   {version: '1.2.3+alpha'},
   {version: '1.2.3+alpha.beta'},
   {version: '1.2.3+42'},
-  {version: '1.2.3+42.24'}
+  {version: '1.2.3+42.24'},
+  {version: '1.2.3-alpha'},
+  {version: '1.2.3-alpha.beta'},
+  {version: '1.2.3-42'},
+  {version: '1.2.3-42.24'},
+  {version: '1.2.3-alpha+42.24'},
+  {version: '1.2.3-alpha.beta+123456'},
+  {version: '1.2.3-42+24'},
+  {version: '1.2.3-42.24+24.42'},
+  {version: '1.2.3-alpha.gamma+4.5.6', satisfies: '1.x'}
 ]
 
 function validate(env: NodeJS.ProcessEnv, validate: (stdout: string) => void) {
@@ -101,12 +119,25 @@ describe('parse', () => {
                 ;`::set-output name=build-${index}::${buildPart}`
               })
             }
+            if (parsedVersion.prerelease.length > 0) {
+              expect(stdout).toContain(
+                `::set-output name=prerelease::${parsedVersion.prerelease.join(
+                  '.'
+                )}`
+              )
+              expect(stdout).toContain(
+                `::set-output name=prerelease-parts::${parsedVersion.prerelease.length}`
+              )
+              parsedVersion.build.forEach((prereleasePart, index) => {
+                ;`::set-output name=prerelease-${index}::${prereleasePart}`
+              })
+            }
           } else {
             expect(stdout).not.toContain(`::set-output name=major::`)
             expect(stdout).not.toContain(`::set-output name=minor::`)
             expect(stdout).not.toContain(`::set-output name=patch::`)
-            expect(stdout).not.toContain(`::set-output name=build::`)
-            expect(stdout).not.toContain(`::set-output name=build[::`)
+            expect(stdout).not.toContain(`::set-output name=build`)
+            expect(stdout).not.toContain(`::set-output name=prerelease`)
           }
         }
       )
