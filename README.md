@@ -38,7 +38,10 @@ A wrapper around [semver](https://www.npmjs.com/package/semver).
 If any of the inputs cannot be parsed, it is just silently ignored.
 This action tries its best not to fail.
 
-To see the list of available versions (`@latest` in the example above), navigate to the [Releases & Tags](https://github.com/madhead/semver-utils/tags) page of this repo.
+To see the list of available versions (`latest` in the example above), navigate to the [Releases & Tags](https://github.com/madhead/semver-utils/tags) page of this repo.
+Whenever a new version is released, corresponding tags are created / updated.
+`latest` tag always points to the latest release (i.e. it's the same as using `main` branch).
+There are also `$major` and `$major.$minor` tags pointing to the latest matching version (i.e. tag `1` always points to the latest `1.x` version, and tag `1.1` — to the latest `1.1.x` version).
 
 To learn more the inputs / outpus look at the comprehensive test suit: [`main.test.ts`](__tests__/main.test.ts).
 
