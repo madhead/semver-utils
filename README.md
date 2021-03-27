@@ -7,7 +7,7 @@
 # madhead/semver-utils
 
 One-stop shop for working with semantic versions in your GitHub Actions workflows.
-A wrapper around [semver](https://www.npmjs.com/package/semver).
+A wrapper around [semver](https://www.npmjs.com/package/semver), so read [its docs](https://github.com/npm/node-semver#functions) to know more about supported operations.
 
 ## Usage
 
@@ -33,6 +33,13 @@ A wrapper around [semver](https://www.npmjs.com/package/semver).
     echo "${{ steps.version.outputs.build-1 }}"           # 24
     echo "${{ steps.version.outputs.comparison-result }}" # <
     echo "${{ steps.version.outputs.satisfies }}"         # true
+    echo "${{ steps.version.outputs.inc-major }}"         # 2.0.0
+    echo "${{ steps.version.outputs.inc-premajor }}"      # 2.0.0-0
+    echo "${{ steps.version.outputs.inc-minor }}"         # 1.3.0
+    echo "${{ steps.version.outputs.inc-preminor }}"      # 1.3.0-0
+    echo "${{ steps.version.outputs.inc-patch }}"         # 1.2.4
+    echo "${{ steps.version.outputs.inc-prepatch }}"      # 1.2.4-0
+    echo "${{ steps.version.outputs.inc-prerelease }}"    # 1.2.4-0
 ```
 
 If any of the inputs cannot be parsed, it is just silently ignored.
