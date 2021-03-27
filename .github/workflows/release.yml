@@ -2,12 +2,42 @@ name: Release
 
 on:
   push:
-    tags:
-      - '*.*.*'
+    branches:
+      - main
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: hmarr/debug-action@v2
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RELEASES_GITHUB_TOKEN }}
+
+      - run: npm install
+      - run: npm run all
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: dist/**
+
+      - run: node -p "'::set-output name=version::' + require('./package.json').version"
+        id: version
+
+      - uses: ./
+        id: parsedVersion
+        with:
+          version: ${{ steps.version.outputs.version }}
+
+      - run: git tag --force ${{ steps.parsedVersion.outputs.major }}.${{ steps.parsedVersion.outputs.minor }}.${{ steps.parsedVersion.outputs.patch }}
+      - run: git tag --force ${{ steps.parsedVersion.outputs.major }}.${{ steps.parsedVersion.outputs.minor }}
+      - run: git tag --force ${{ steps.parsedVersion.outputs.major }}
+      - run: git tag --force 'latest'
+
+      - run: git push --force --tags origin
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.parsedVersion.outputs.major }}.${{ steps.parsedVersion.outputs.minor }}.${{ steps.parsedVersion.outputs.patch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
