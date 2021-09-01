@@ -1,6 +1,6 @@
 {
   "name": "semver-utils",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "private": true,
   "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
@@ -43,6 +43,6 @@
     "js-yaml": "^4.1.0",
     "prettier": "2.3.2",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.2"
   }
 }
