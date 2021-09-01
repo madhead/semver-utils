@@ -70,7 +70,9 @@ async function run(): Promise<void> {
       core.setOutput('satisfies', satisfies(version, satisfiesRangeInput))
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
   }
 }
 
