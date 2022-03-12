@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.sender.login != 'dependabot[bot]' }}
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.base.sha }}
 
       - run: node -p "'::set-output name=version::' + require('./package.json').version"
         id: base-version
 
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
 
       - run: node -p "'::set-output name=version::' + require('./package.json').version"
         id: new-version
