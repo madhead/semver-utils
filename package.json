@@ -1,6 +1,6 @@
 {
   "name": "semver-utils",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
@@ -38,11 +38,11 @@
     "eslint": "^8.16.0",
     "eslint-plugin-github": "^4.3.6",
     "eslint-plugin-jest": "^26.4.5",
-    "jest": "^27.5.1",
-    "jest-circus": "^27.5.1",
+    "jest": "^28.1.0",
+    "jest-circus": "^28.1.0",
     "js-yaml": "^4.1.0",
     "prettier": "2.6.2",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^28.0.3",
     "typescript": "^4.7.2"
   }
 }
