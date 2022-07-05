@@ -1,0 +1,42 @@
+inputs:
+  version:
+    type: string
+  compare-to:
+    type: string
+  satisfies:
+    type: string
+  identifier:
+    type: string
+outputs:
+  major:
+    type: string
+  minor:
+    type: string
+  patch:
+    type: string
+  build:
+    type: string
+  build-parts:
+    type: integer
+  prerelease:
+    type: string
+  prerelease-parts:
+    type: integer
+  comparison-result:
+    type: string
+  satisfies:
+    type: boolean
+  inc-major:
+    type: string
+  inc-premajor:
+    type: string
+  inc-minor:
+    type: string
+  inc-preminor:
+    type: string
+  inc-patch:
+    type: string
+  inc-prepatch:
+    type: string
+  inc-prerelease:
+    type: string

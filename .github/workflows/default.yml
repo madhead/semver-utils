@@ -57,3 +57,10 @@ jobs:
       - run: '[[ "1.2.4" == "${{ steps.test-4.outputs.inc-patch }}" ]]'
       - run: '[[ "1.2.4-0" == "${{ steps.test-4.outputs.inc-prepatch }}" ]]'
       - run: '[[ "1.2.4-0" == "${{ steps.test-4.outputs.inc-prerelease }}" ]]'
+
+  actions-typing:
+    name: Validate actions typing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: krzema12/github-actions-typing@v0
