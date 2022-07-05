@@ -26,7 +26,7 @@
   "author": "madhead <siarhei.krukau@gmail.com> (https://madhead.me)",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.8.2",
+    "@actions/core": "^1.9.0",
     "@types/semver": "^7.3.9",
     "semver": "^7.3.7"
   },
