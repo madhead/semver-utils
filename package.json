@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.9.1",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "semver": "^7.3.7"
   },
   "devDependencies": {
