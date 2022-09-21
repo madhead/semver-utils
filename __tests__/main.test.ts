@@ -110,6 +110,7 @@ describe('parse', () => {
           const parsedVersion = parse(item.version)
 
           if (parsedVersion) {
+            expect(stdout).toContain(`::set-output name=release::${parsedVersion.major}.${parsedVersion.minor}.${parsedVersion.patch}`)
             expect(stdout).toContain(`::set-output name=major::${parsedVersion.major}`)
             expect(stdout).toContain(`::set-output name=minor::${parsedVersion.minor}`)
             expect(stdout).toContain(`::set-output name=patch::${parsedVersion.patch}`)
@@ -128,6 +129,7 @@ describe('parse', () => {
               })
             }
           } else {
+            expect(stdout).not.toContain(`::set-output name=release::`)
             expect(stdout).not.toContain(`::set-output name=major::`)
             expect(stdout).not.toContain(`::set-output name=minor::`)
             expect(stdout).not.toContain(`::set-output name=patch::`)
