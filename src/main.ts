@@ -3,10 +3,14 @@ import {parse, satisfies} from 'semver'
 
 async function run(): Promise<void> {
   try {
-    const versionInput = core.getInput('version')
+    const lenient = core.getInput('lenient').toLowerCase() !== 'false'
+    const versionInput = core.getInput('version', {required: true})
     const version = parse(versionInput)
 
     if (version === null) {
+      if (!lenient) {
+        core.setFailed(`Invalid version: ${versionInput}`)
+      }
       return
     }
 

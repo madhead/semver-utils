@@ -13,6 +13,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "i18n-text/no-en": "off",
     "eslint-comments/no-use": "off",
     "github/array-foreach": "off",
     "import/no-namespace": "off",

@@ -45,9 +45,13 @@ function run() {
     var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const versionInput = core.getInput('version');
+            const lenient = core.getInput('lenient').toLowerCase() !== 'false';
+            const versionInput = core.getInput('version', { required: true });
             const version = (0, semver_1.parse)(versionInput);
             if (version === null) {
+                if (!lenient) {
+                    core.setFailed(`Invalid version: ${versionInput}`);
+                }
                 return;
             }
             core.setOutput('release', `${version.major}.${version.minor}.${version.patch}`);

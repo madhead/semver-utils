@@ -7,6 +7,8 @@ inputs:
     type: string
   identifier:
     type: string
+  lenient:
+    type: boolean
 outputs:
   release:
     type: string
