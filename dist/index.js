@@ -50,6 +50,7 @@ function run() {
             if (version === null) {
                 return;
             }
+            core.setOutput('release', `${version.major}.${version.minor}.${version.patch}`);
             core.setOutput('major', version.major);
             core.setOutput('minor', version.minor);
             core.setOutput('patch', version.patch);

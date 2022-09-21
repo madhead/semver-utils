@@ -24,6 +24,7 @@ A wrapper around [semver](https://www.npmjs.com/package/semver), so read [its do
     # A range to check against
     satisfies: 1.x
 - run: |
+    echo "${{ steps.version.outputs.release }}"           # 1.2.3
     echo "${{ steps.version.outputs.major }}"             # 1
     echo "${{ steps.version.outputs.minor }}"             # 2
     echo "${{ steps.version.outputs.patch }}"             # 3
@@ -41,6 +42,8 @@ A wrapper around [semver](https://www.npmjs.com/package/semver), so read [its do
     echo "${{ steps.version.outputs.inc-prepatch }}"      # 1.2.4-0
     echo "${{ steps.version.outputs.inc-prerelease }}"    # 1.2.4-0
 ```
+
+If the version cannot be parsed, all the outputs [will be equal to an empty string](.github/workflows/default.yml#L18-L26).
 
 If any of the inputs cannot be parsed, it is just silently ignored.
 This action tries its best not to fail.

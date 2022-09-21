@@ -8,6 +8,8 @@ inputs:
   identifier:
     type: string
 outputs:
+  release:
+    type: string
   major:
     type: string
   minor:

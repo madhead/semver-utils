@@ -16,9 +16,20 @@ jobs:
       - run: npm run all
 
       - uses: ./
+        id: test-0
+        with:
+          version: wrong
+      - run: '[[ "" == "${{ steps.test-1.outputs.release }}" ]]'
+      - run: '[[ "" == "${{ steps.test-1.outputs.major }}" ]]'
+      - run: '[[ "" == "${{ steps.test-1.outputs.minor }}" ]]'
+      - run: '[[ "" == "${{ steps.test-1.outputs.patch }}" ]]'
+      - run: '[[ "" == "${{ steps.test-1.outputs.any_other_property }}" ]]'
+
+      - uses: ./
         id: test-1
         with:
           version: 1.2.3-alpha.gamma+4.5.6
+      - run: '[[ "1.2.3" == "${{ steps.test-1.outputs.release }}" ]]'
       - run: '[[ "1" == "${{ steps.test-1.outputs.major }}" ]]'
       - run: '[[ "2" == "${{ steps.test-1.outputs.minor }}" ]]'
       - run: '[[ "3" == "${{ steps.test-1.outputs.patch }}" ]]'
