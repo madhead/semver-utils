@@ -2,16 +2,20 @@ import {execPath} from 'process'
 import {execFileSync} from 'child_process'
 import {join} from 'path'
 import {parse, satisfies} from 'semver'
+import {type} from 'os'
 
 interface TestData {
   version: string
   compareTo?: string
   satisfies?: string
   identifier?: string
+  lenient?: boolean
 }
 
 const data: TestData[] = [
   {version: 'Forty-two'},
+  {version: 'Forty-two', lenient: true},
+  {version: 'Forty-two', lenient: false},
   {version: '1.2'},
   {version: '1'},
 
@@ -92,52 +96,58 @@ const data: TestData[] = [
 ]
 
 function validate(env: NodeJS.ProcessEnv, validate: (stdout: string) => void) {
-  validate(
-    execFileSync(execPath, [join(__dirname, '..', 'lib', 'main.js')], {
-      env: env
-    }).toString()
-  )
+  try {
+    validate(
+      execFileSync(execPath, [join(__dirname, '..', 'lib', 'main.js')], {
+        env: env
+      }).toString()
+    )
+  } catch (e: any) {
+    expect(env).toHaveProperty('INPUT_LENIENT', 'false')
+  }
 }
 
 describe('parse', () => {
   data.forEach(item => {
-    test(`parse(${item.version})`, () => {
-      validate(
-        {
-          INPUT_VERSION: item.version
-        },
-        (stdout: string) => {
-          const parsedVersion = parse(item.version)
+    const env: NodeJS.ProcessEnv = {
+      INPUT_VERSION: item.version
+    }
 
-          if (parsedVersion) {
-            expect(stdout).toContain(`::set-output name=release::${parsedVersion.major}.${parsedVersion.minor}.${parsedVersion.patch}`)
-            expect(stdout).toContain(`::set-output name=major::${parsedVersion.major}`)
-            expect(stdout).toContain(`::set-output name=minor::${parsedVersion.minor}`)
-            expect(stdout).toContain(`::set-output name=patch::${parsedVersion.patch}`)
-            if (parsedVersion.build.length > 0) {
-              expect(stdout).toContain(`::set-output name=build::${parsedVersion.build.join('.')}`)
-              expect(stdout).toContain(`::set-output name=build-parts::${parsedVersion.build.length}`)
-              parsedVersion.build.forEach((buildPart, index) => {
-                ;`::set-output name=build-${index}::${buildPart}`
-              })
-            }
-            if (parsedVersion.prerelease.length > 0) {
-              expect(stdout).toContain(`::set-output name=prerelease::${parsedVersion.prerelease.join('.')}`)
-              expect(stdout).toContain(`::set-output name=prerelease-parts::${parsedVersion.prerelease.length}`)
-              parsedVersion.build.forEach((prereleasePart, index) => {
-                ;`::set-output name=prerelease-${index}::${prereleasePart}`
-              })
-            }
-          } else {
-            expect(stdout).not.toContain(`::set-output name=release::`)
-            expect(stdout).not.toContain(`::set-output name=major::`)
-            expect(stdout).not.toContain(`::set-output name=minor::`)
-            expect(stdout).not.toContain(`::set-output name=patch::`)
-            expect(stdout).not.toContain(`::set-output name=build`)
-            expect(stdout).not.toContain(`::set-output name=prerelease`)
+    if (item.lenient === false) {
+      env['INPUT_LENIENT'] = 'false'
+    }
+
+    test(`parse(${item.version} (lenient: ${env['INPUT_LENIENT']})`, () => {
+      validate(env, (stdout: string) => {
+        const parsedVersion = parse(item.version)
+        if (parsedVersion) {
+          expect(stdout).toContain(`::set-output name=release::${parsedVersion.major}.${parsedVersion.minor}.${parsedVersion.patch}`)
+          expect(stdout).toContain(`::set-output name=major::${parsedVersion.major}`)
+          expect(stdout).toContain(`::set-output name=minor::${parsedVersion.minor}`)
+          expect(stdout).toContain(`::set-output name=patch::${parsedVersion.patch}`)
+          if (parsedVersion.build.length > 0) {
+            expect(stdout).toContain(`::set-output name=build::${parsedVersion.build.join('.')}`)
+            expect(stdout).toContain(`::set-output name=build-parts::${parsedVersion.build.length}`)
+            parsedVersion.build.forEach((buildPart, index) => {
+              ;`::set-output name=build-${index}::${buildPart}`
+            })
           }
+          if (parsedVersion.prerelease.length > 0) {
+            expect(stdout).toContain(`::set-output name=prerelease::${parsedVersion.prerelease.join('.')}`)
+            expect(stdout).toContain(`::set-output name=prerelease-parts::${parsedVersion.prerelease.length}`)
+            parsedVersion.build.forEach((prereleasePart, index) => {
+              ;`::set-output name=prerelease-${index}::${prereleasePart}`
+            })
+          }
+        } else {
+          expect(stdout).not.toContain(`::set-output name=release::`)
+          expect(stdout).not.toContain(`::set-output name=major::`)
+          expect(stdout).not.toContain(`::set-output name=minor::`)
+          expect(stdout).not.toContain(`::set-output name=patch::`)
+          expect(stdout).not.toContain(`::set-output name=build`)
+          expect(stdout).not.toContain(`::set-output name=prerelease`)
         }
-      )
+      })
     })
   })
 })

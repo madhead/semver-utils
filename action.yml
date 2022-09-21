@@ -14,6 +14,10 @@ inputs:
   identifier:
     required: false
     description: An identifier to pass to the semver's inc function
+  lenient:
+    required: false
+    description: Do not fail on incorrect input
+    default: 'true'
 outputs:
   release:
     description: Version's release (major.minor.patch)

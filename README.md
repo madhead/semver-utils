@@ -43,10 +43,26 @@ A wrapper around [semver](https://www.npmjs.com/package/semver), so read [its do
     echo "${{ steps.version.outputs.inc-prerelease }}"    # 1.2.4-0
 ```
 
-If the version cannot be parsed, all the outputs [will be equal to an empty string](.github/workflows/default.yml#L18-L26).
+If the version cannot be parsed, all the outputs [will be equal to an empty string](.github/workflows/default.yml#L27-L35), unless `lenient` is set to `false` explicitly.
+If `lenient` is `false`, the action [will fail](.github/workflows/default.yml#L18-L25).
 
-If any of the inputs cannot be parsed, it is just silently ignored.
-This action tries its best not to fail.
+```yml
+- uses: madhead/semver-utils@latest
+  id: lenient
+  with:
+    version: invalid
+- run: |
+    echo "${{ steps.lenient.outputs.release }}"           # (empty string)
+
+- uses: madhead/semver-utils@latest
+  id: strict
+  with:
+    version: invalid
+    lenient: false
+  continue-on-error: true                                 # failure is expected and acceptable for this example
+- run: |
+    echo "${{ steps.strict.outcome }}"                    # failure
+```
 
 To see the list of available versions (`latest` in the example above), navigate to the [Releases & Tags](https://github.com/madhead/semver-utils/tags) page of this repo.
 Whenever a new version is released, corresponding tags are created / updated.
