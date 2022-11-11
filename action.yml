@@ -54,7 +54,7 @@ outputs:
   inc-prerelease:
     description: A result of the call of the semver's `inc` function with `prerelease` increment
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: hash
