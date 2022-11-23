@@ -3,6 +3,8 @@ inputs:
     type: string
   compare-to:
     type: string
+  diff-with:
+    type: string
   satisfies:
     type: string
   identifier:
@@ -27,6 +29,8 @@ outputs:
   prerelease-parts:
     type: integer
   comparison-result:
+    type: string
+  diff-result:
     type: string
   satisfies:
     type: boolean

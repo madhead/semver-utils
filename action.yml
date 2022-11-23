@@ -8,6 +8,9 @@ inputs:
   compare-to:
     required: false
     description: A version to compare with, if any
+  diff-with:
+    required: false
+    description: A version to diff with. If not specified, the version will be diffed with the `compare-to` input. If `compare-to` is not specified either, nothing happens.
   satisfies:
     required: false
     description: A range to check against
@@ -37,6 +40,8 @@ outputs:
     description: Number of components in version's pre-release. Individual сomponents are returned as `prerelease-N` outputs, where an is an index from zero to `prerelease-parts` - 1.
   comparison-result:
     description: If the compare-to was provided, this output will contain "<" if comes after the version, ">" if it preceeds it, and "=" if they are equal
+  diff-result:
+    description: If the diff-to or compare-to were provided, this output will contain the diff result
   satisfies:
     description: true if the version satisfies the given range
   inc-major:
@@ -54,8 +59,8 @@ outputs:
   inc-prerelease:
     description: A result of the call of the semver's `inc` function with `prerelease` increment
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: node16
+  main: dist/index.js
 branding:
   icon: hash
   color: gray-dark
