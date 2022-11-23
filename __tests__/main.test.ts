@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises'
 import os from 'os'
 import { join } from 'path'
 import { execPath } from 'process'
-import { parse, satisfies } from 'semver'
+import { diff, parse, satisfies, sort } from 'semver'
 import { FileResult, fileSync as tmpFile } from 'tmp'
 import { promisify } from 'util'
 
@@ -12,92 +12,112 @@ const exec = promisify(execFile)
 interface TestData {
   version: string
   compareTo?: string
+  diffWith?: string
   satisfies?: string
   identifier?: string
   lenient?: boolean
 }
 
 const data: TestData[] = [
-  {version: 'Forty-two'},
-  {version: 'Forty-two', lenient: true},
-  {version: 'Forty-two', lenient: false},
-  {version: '1.2'},
-  {version: '1'},
+  { version: 'Forty-two' },
+  { version: 'Forty-two', lenient: true },
+  { version: 'Forty-two', lenient: false },
+  { version: '1.2' },
+  { version: '1' },
 
-  {version: '0.0.0', satisfies: ''},
-  {version: '0.0.0', satisfies: '', identifier: 'alpha'},
-  {version: '0.0.0', satisfies: '', identifier: 'alpha.0'},
-  {version: '0.0.0', satisfies: '', identifier: 'alpha.beta'},
-  {version: '0.0.0', compareTo: '0.0.0', satisfies: '*'},
-  {version: '0.0.0', compareTo: '0.0'},
-  {version: '0.0.0', compareTo: '0'},
-  {version: '0.0.0', compareTo: ''},
-  {version: '0.0.0', compareTo: 'Forty-two'},
-  {version: '0.0.1'},
-  {version: '0.0.1', compareTo: '0.0.2'},
-  {version: '0.1.2'},
-  {version: '0.1.2', compareTo: '0.2.0'},
-  {version: '0.1.2', compareTo: '0.1.1'},
-  {version: '1.2.3'},
-  {version: '1.2.3', identifier: 'snapshot'},
-  {version: '1.2.3', identifier: 'snapshot.alpha'},
-  {version: '1.2.3', identifier: 'snapshot.0'},
-  {version: '1.2.3', identifier: 'snapshot.1.2'},
-  {version: '1.2.3', identifier: ''},
-  {version: '1.2.3', identifier: ' '},
-  {version: '1.2.3', identifier: '  '},
-  {version: '1.2.3', compareTo: '1.2.3'},
-  {version: '1.2.3', compareTo: '1.2.3+42'},
-  {version: '1.2.3', compareTo: '1.2.3+42.24'},
-  {version: '1.2.3', compareTo: '1.2.3-42'},
-  {version: '1.2.3', compareTo: '1.2.3-42.24'},
-  {version: '1.2.3', compareTo: '1.2.3-alpha'},
-  {version: '1.2.3', compareTo: '1.2.3-beta'},
-  {version: '1.2.3', compareTo: '1.2.4-alpha+3'},
-  {version: '1.2.3', compareTo: '1.2.4'},
-  {version: '1.2.3', compareTo: '1.3.0'},
-  {version: '1.2.3', compareTo: '2.0.0'},
-  {version: '1.2.3', compareTo: '1.2.2'},
-  {version: '1.2.3', compareTo: '1.1.99'},
-  {version: '1.2.3', compareTo: '0.99.99'},
-  {version: '1.2.3', compareTo: ''},
-  {version: '1.2.3', compareTo: '    '},
-  {version: '1.2.3', compareTo: 'XXX'},
-  {version: '1.2.3', satisfies: '>1.0.0'},
-  {version: '1.2.3-alpha', satisfies: '>1.0.0'},
-  {version: '1.2.3', satisfies: '<2.0.0'},
-  {version: '1.2.3-alpha', satisfies: '<2.0.0'},
-  {version: '1.2.3', satisfies: '>=1.2.3'},
-  {version: '1.2.3-alpha', satisfies: '>=1.2.3'},
-  {version: '1.2.3', satisfies: '<=1.2.3'},
-  {version: '1.2.3-alpha', satisfies: '<=1.2.3'},
-  {version: '1.2.3', satisfies: '=1.2.3'},
-  {version: '1.2.3', satisfies: '>1.0.0 <2.0.0'},
-  {version: '1.2.3', satisfies: '1.2.x'},
-  {version: '1.2.3', satisfies: '1.x'},
-  {version: '2.2.3', satisfies: '<2.0.0'},
-  {version: '2.2.3', satisfies: '<=2.0.0'},
-  {version: '2.2.3', satisfies: '=1.2.3'},
-  {version: '2.2.3', satisfies: '>1.0.0 < 2.0.0'},
-  {version: '2.2.3', satisfies: '1.2.x'},
-  {version: '2.2.3', satisfies: '1.x'},
-  {version: '2.2.3', satisfies: ''},
-  {version: '2.2.3', satisfies: ' '},
-  {version: '2.2.3', satisfies: '  '},
-  {version: '2.2.3', satisfies: 'XXX'},
-  {version: '1.2.3+alpha'},
-  {version: '1.2.3+alpha.beta'},
-  {version: '1.2.3+42'},
-  {version: '1.2.3+42.24'},
-  {version: '1.2.3-alpha'},
-  {version: '1.2.3-alpha.beta'},
-  {version: '1.2.3-42'},
-  {version: '1.2.3-42.24'},
-  {version: '1.2.3-alpha+42.24'},
-  {version: '1.2.3-alpha.beta+123456'},
-  {version: '1.2.3-42+24'},
-  {version: '1.2.3-42.24+24.42'},
-  {version: '1.2.3-alpha.gamma+4.5.6', satisfies: '1.x'}
+  { version: '0.0.0', satisfies: '' },
+  { version: '0.0.0', satisfies: '', identifier: 'alpha' },
+  { version: '0.0.0', satisfies: '', identifier: 'alpha.0' },
+  { version: '0.0.0', satisfies: '', identifier: 'alpha.beta' },
+  { version: '0.0.0', compareTo: '0.0.0', satisfies: '*' },
+  { version: '0.0.0', compareTo: '0.0' },
+  { version: '0.0.0', compareTo: '0' },
+  { version: '0.0.0', compareTo: '' },
+  { version: '0.0.0', compareTo: 'Forty-two' },
+  { version: '0.0.1' },
+  { version: '0.0.1', compareTo: '0.0.2' },
+  { version: '0.1.2' },
+  { version: '0.1.2', compareTo: '0.2.0' },
+  { version: '0.1.2', compareTo: '0.1.1' },
+  { version: '1.2.3' },
+  { version: '1.2.3', identifier: 'snapshot' },
+  { version: '1.2.3', identifier: 'snapshot.alpha' },
+  { version: '1.2.3', identifier: 'snapshot.0' },
+  { version: '1.2.3', identifier: 'snapshot.1.2' },
+  { version: '1.2.3', identifier: '' },
+  { version: '1.2.3', identifier: ' ' },
+  { version: '1.2.3', identifier: '  ' },
+  { version: '1.2.3', compareTo: '1.2.3', diffWith: '1.2.4' },
+  { version: '1.2.3', compareTo: '1.2.3', diffWith: '1.3.0' },
+  { version: '1.2.3', compareTo: '1.2.3', diffWith: '2.0.0' },
+  { version: '1.2.3', compareTo: '1.2.3+42' },
+  { version: '1.2.3', compareTo: '1.2.3+42.24' },
+  { version: '1.2.3', compareTo: '1.2.3-42' },
+  { version: '1.2.3', compareTo: '1.2.3-42.24' },
+  { version: '1.2.3', compareTo: '1.2.3-alpha' },
+  { version: '1.2.3', compareTo: '1.2.3-beta' },
+  { version: '1.2.3', compareTo: '1.2.4-alpha+3' },
+  { version: '1.2.3', compareTo: '1.2.4' },
+  { version: '1.2.3', compareTo: '1.3.0' },
+  { version: '1.2.3', compareTo: '2.0.0' },
+  { version: '1.2.3', compareTo: '1.2.2' },
+  { version: '1.2.3', compareTo: '1.1.99' },
+  { version: '1.2.3', compareTo: '0.99.99' },
+  { version: '1.2.3', compareTo: '' },
+  { version: '1.2.3', compareTo: '    ' },
+  { version: '1.2.3', diffWith: '1.2.4' },
+  { version: '1.2.3', diffWith: '1.3.0' },
+  { version: '1.2.3', diffWith: '2.0.0' },
+  { version: '2.0.0', diffWith: '1.2.3' },
+  { version: '2.0.0', diffWith: '1.3.0' },
+  { version: '1.2.3', diffWith: '1.2.3-alpha' },
+  { version: '1.2.3', diffWith: '1.2.4-alpha' },
+  { version: '1.2.3-alpha', diffWith: '1.2.3' },
+  { version: '1.2.4-alpha', diffWith: '1.2.3' },
+  { version: '1.2.3', diffWith: '1.2.3+42' },
+  { version: '1.2.3+42', diffWith: '1.2.3' },
+  { version: '1.2.3', diffWith: '1.2.4+42' },
+  { version: '1.2.4+42', diffWith: '1.2.3' },
+  { version: '1.2.3', diffWith: '1.3.0+42' },
+  { version: '1.3.0+42', diffWith: '1.2.3' },
+  { version: '1.3.0+42', diffWith: '' },
+  { version: '1.3.0+42', diffWith: '             ' },
+  { version: '1.2.3', compareTo: 'XXX' },
+  { version: '1.2.3', satisfies: '>1.0.0' },
+  { version: '1.2.3-alpha', satisfies: '>1.0.0' },
+  { version: '1.2.3', satisfies: '<2.0.0' },
+  { version: '1.2.3-alpha', satisfies: '<2.0.0' },
+  { version: '1.2.3', satisfies: '>=1.2.3' },
+  { version: '1.2.3-alpha', satisfies: '>=1.2.3' },
+  { version: '1.2.3', satisfies: '<=1.2.3' },
+  { version: '1.2.3-alpha', satisfies: '<=1.2.3' },
+  { version: '1.2.3', satisfies: '=1.2.3' },
+  { version: '1.2.3', satisfies: '>1.0.0 <2.0.0' },
+  { version: '1.2.3', satisfies: '1.2.x' },
+  { version: '1.2.3', satisfies: '1.x' },
+  { version: '2.2.3', satisfies: '<2.0.0' },
+  { version: '2.2.3', satisfies: '<=2.0.0' },
+  { version: '2.2.3', satisfies: '=1.2.3' },
+  { version: '2.2.3', satisfies: '>1.0.0 < 2.0.0' },
+  { version: '2.2.3', satisfies: '1.2.x' },
+  { version: '2.2.3', satisfies: '1.x' },
+  { version: '2.2.3', satisfies: '' },
+  { version: '2.2.3', satisfies: ' ' },
+  { version: '2.2.3', satisfies: '  ' },
+  { version: '2.2.3', satisfies: 'XXX' },
+  { version: '1.2.3+alpha' },
+  { version: '1.2.3+alpha.beta' },
+  { version: '1.2.3+42' },
+  { version: '1.2.3+42.24' },
+  { version: '1.2.3-alpha' },
+  { version: '1.2.3-alpha.beta' },
+  { version: '1.2.3-42' },
+  { version: '1.2.3-42.24' },
+  { version: '1.2.3-alpha+42.24' },
+  { version: '1.2.3-alpha.beta+123456' },
+  { version: '1.2.3-42+24' },
+  { version: '1.2.3-42.24+24.42' },
+  { version: '1.2.3-alpha.gamma+4.5.6', satisfies: '1.x' }
 ]
 
 async function validate(env: NodeJS.ProcessEnv, validate: (githubOutput: FileResult) => Promise<void>) {
@@ -160,6 +180,9 @@ describe('parse', () => {
           expect(output).not.toMatch(new RegExp(`build<<.+${os.EOL}.+${os.EOL}`))
           expect(output).not.toMatch(new RegExp(`prerelease<<.+${os.EOL}.+${os.EOL}`))
         }
+
+        expect(output).not.toMatch(new RegExp(`comparison-result`))
+        expect(output).not.toMatch(new RegExp(`diff-result`))
       })
     })
   })
@@ -172,7 +195,8 @@ describe('compare', () => {
         await validate(
           {
             INPUT_VERSION: item.version,
-            'INPUT_COMPARE-TO': item.compareTo
+            'INPUT_COMPARE-TO': item.compareTo,
+            'INPUT_DIFF-WITH': item.diffWith
           },
           async (githubOutput: FileResult) => {
             const output = await readFile(githubOutput.name, 'utf8')
@@ -188,9 +212,43 @@ describe('compare', () => {
                 } else if (parsedCompareTo.compare(item.version) === 1) {
                   expect(output).toMatch(new RegExp(`comparison-result<<.+${os.EOL}<${os.EOL}`))
                 }
+
+                if (item.diffWith) {
+                  expect(output).toMatch(new RegExp(`diff-result<<.+${os.EOL}${diff(item.version, item.diffWith) || ''}${os.EOL}`))
+                } else {
+                  expect(output).toMatch(new RegExp(`diff-result<<.+${os.EOL}${diff(item.version, item.compareTo) || ''}${os.EOL}`))
+                }
               }
             } else {
               expect(output).not.toMatch(new RegExp(`comparison-result<<.+${os.EOL}.+${os.EOL}`))
+            }
+          }
+        )
+      })
+    }
+  })
+})
+
+describe('diff', () => {
+  data.forEach(item => {
+    if (item.diffWith !== undefined) {
+      test(`diff(${item.version}, ${item.diffWith})`, async () => {
+        await validate(
+          {
+            INPUT_VERSION: item.version,
+            'INPUT_DIFF-WITH': item.diffWith
+          },
+          async (githubOutput: FileResult) => {
+            const output = await readFile(githubOutput.name, 'utf8')
+
+            if (item.diffWith) {
+              const parsedDiffTo = parse(item.diffWith)
+
+              if (parsedDiffTo) {
+                expect(output).toMatch(new RegExp(`diff-result<<.+${os.EOL}${diff(item.version, parsedDiffTo) || ''}${os.EOL}`))
+              }
+            } else {
+              expect(output).not.toMatch(new RegExp(`diff-result<<.+${os.EOL}.+${os.EOL}`))
             }
           }
         )
