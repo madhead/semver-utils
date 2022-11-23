@@ -1,8 +1,13 @@
-import {execPath} from 'process'
-import {execFileSync} from 'child_process'
-import {join} from 'path'
-import {parse, satisfies} from 'semver'
-import {type} from 'os'
+import { execFile } from 'child_process'
+import { readFile } from 'fs/promises'
+import os from 'os'
+import { join } from 'path'
+import { execPath } from 'process'
+import { parse, satisfies } from 'semver'
+import { FileResult, fileSync as tmpFile } from 'tmp'
+import { promisify } from 'util'
+
+const exec = promisify(execFile)
 
 interface TestData {
   version: string
@@ -95,13 +100,17 @@ const data: TestData[] = [
   {version: '1.2.3-alpha.gamma+4.5.6', satisfies: '1.x'}
 ]
 
-function validate(env: NodeJS.ProcessEnv, validate: (stdout: string) => void) {
+async function validate(env: NodeJS.ProcessEnv, validate: (githubOutput: FileResult) => Promise<void>) {
   try {
-    validate(
-      execFileSync(execPath, [join(__dirname, '..', 'lib', 'main.js')], {
-        env: env
-      }).toString()
-    )
+    const githubOutput = tmpFile()
+
+    await exec(execPath, [join(__dirname, '..', 'lib', 'main.js')], {
+      env: {
+        ...env,
+        GITHUB_OUTPUT: githubOutput.name
+      }
+    })
+    await validate(githubOutput)
   } catch (e: any) {
     expect(env).toHaveProperty('INPUT_LENIENT', 'false')
   }
@@ -117,35 +126,39 @@ describe('parse', () => {
       env['INPUT_LENIENT'] = 'false'
     }
 
-    test(`parse(${item.version} (lenient: ${env['INPUT_LENIENT']})`, () => {
-      validate(env, (stdout: string) => {
+    test(`parse(${item.version} (lenient: ${env['INPUT_LENIENT']})`, async () => {
+      await validate(env, async (githubOutput: FileResult) => {
+        const output = await readFile(githubOutput.name, 'utf8')
         const parsedVersion = parse(item.version)
+
         if (parsedVersion) {
-          expect(stdout).toContain(`::set-output name=release::${parsedVersion.major}.${parsedVersion.minor}.${parsedVersion.patch}`)
-          expect(stdout).toContain(`::set-output name=major::${parsedVersion.major}`)
-          expect(stdout).toContain(`::set-output name=minor::${parsedVersion.minor}`)
-          expect(stdout).toContain(`::set-output name=patch::${parsedVersion.patch}`)
+          expect(output).toMatch(
+            new RegExp(`release<<.+${os.EOL}${parsedVersion.major}.${parsedVersion.minor}.${parsedVersion.patch}${os.EOL}`)
+          )
+          expect(output).toMatch(new RegExp(`major<<.+${os.EOL}${parsedVersion.major}${os.EOL}`))
+          expect(output).toMatch(new RegExp(`minor<<.+${os.EOL}${parsedVersion.minor}${os.EOL}`))
+          expect(output).toMatch(new RegExp(`patch<<.+${os.EOL}${parsedVersion.patch}${os.EOL}`))
           if (parsedVersion.build.length > 0) {
-            expect(stdout).toContain(`::set-output name=build::${parsedVersion.build.join('.')}`)
-            expect(stdout).toContain(`::set-output name=build-parts::${parsedVersion.build.length}`)
+            expect(output).toMatch(new RegExp(`build<<.+${os.EOL}${parsedVersion.build.join('.')}${os.EOL}`))
+            expect(output).toMatch(new RegExp(`build-parts<<.+${os.EOL}${parsedVersion.build.length}${os.EOL}`))
             parsedVersion.build.forEach((buildPart, index) => {
-              ;`::set-output name=build-${index}::${buildPart}`
+              expect(output).toMatch(new RegExp(`build-${index}<<.+${os.EOL}${buildPart}${os.EOL}`))
             })
           }
           if (parsedVersion.prerelease.length > 0) {
-            expect(stdout).toContain(`::set-output name=prerelease::${parsedVersion.prerelease.join('.')}`)
-            expect(stdout).toContain(`::set-output name=prerelease-parts::${parsedVersion.prerelease.length}`)
+            expect(output).toMatch(new RegExp(`prerelease<<.+${os.EOL}${parsedVersion.prerelease.join('.')}${os.EOL}`))
+            expect(output).toMatch(new RegExp(`prerelease-parts<<.+${os.EOL}${parsedVersion.prerelease.length}${os.EOL}`))
             parsedVersion.build.forEach((prereleasePart, index) => {
-              ;`::set-output name=prerelease-${index}::${prereleasePart}`
+              expect(output).toMatch(new RegExp(`build-${index}<<.+${os.EOL}${prereleasePart}${os.EOL}`))
             })
           }
         } else {
-          expect(stdout).not.toContain(`::set-output name=release::`)
-          expect(stdout).not.toContain(`::set-output name=major::`)
-          expect(stdout).not.toContain(`::set-output name=minor::`)
-          expect(stdout).not.toContain(`::set-output name=patch::`)
-          expect(stdout).not.toContain(`::set-output name=build`)
-          expect(stdout).not.toContain(`::set-output name=prerelease`)
+          expect(output).not.toMatch(new RegExp(`release<<.+${os.EOL}.+${os.EOL}`))
+          expect(output).not.toMatch(new RegExp(`major<<.+${os.EOL}.+${os.EOL}`))
+          expect(output).not.toMatch(new RegExp(`minor<<.+${os.EOL}.+${os.EOL}`))
+          expect(output).not.toMatch(new RegExp(`patch<<.+${os.EOL}.+${os.EOL}`))
+          expect(output).not.toMatch(new RegExp(`build<<.+${os.EOL}.+${os.EOL}`))
+          expect(output).not.toMatch(new RegExp(`prerelease<<.+${os.EOL}.+${os.EOL}`))
         }
       })
     })
@@ -155,27 +168,29 @@ describe('parse', () => {
 describe('compare', () => {
   data.forEach(item => {
     if (item.compareTo !== undefined) {
-      test(`compare(${item.version}, ${item.compareTo})`, () => {
-        validate(
+      test(`compare(${item.version}, ${item.compareTo})`, async () => {
+        await validate(
           {
             INPUT_VERSION: item.version,
             'INPUT_COMPARE-TO': item.compareTo
           },
-          (stdout: string) => {
+          async (githubOutput: FileResult) => {
+            const output = await readFile(githubOutput.name, 'utf8')
+
             if (item.compareTo) {
               const parsedCompareTo = parse(item.compareTo)
 
               if (parsedCompareTo) {
                 if (parsedCompareTo.compare(item.version) === 0) {
-                  expect(stdout).toContain(`::set-output name=comparison-result::=`)
+                  expect(output).toMatch(new RegExp(`comparison-result<<.+${os.EOL}=${os.EOL}`))
                 } else if (parsedCompareTo.compare(item.version) === -1) {
-                  expect(stdout).toContain(`::set-output name=comparison-result::>`)
+                  expect(output).toMatch(new RegExp(`comparison-result<<.+${os.EOL}>${os.EOL}`))
                 } else if (parsedCompareTo.compare(item.version) === 1) {
-                  expect(stdout).toContain(`::set-output name=comparison-result::<`)
+                  expect(output).toMatch(new RegExp(`comparison-result<<.+${os.EOL}<${os.EOL}`))
                 }
               }
             } else {
-              expect(stdout).not.toContain(`::set-output name=comparison-result::`)
+              expect(output).not.toMatch(new RegExp(`comparison-result<<.+${os.EOL}.+${os.EOL}`))
             }
           }
         )
@@ -187,23 +202,24 @@ describe('compare', () => {
 describe('satisfies', () => {
   data.forEach(item => {
     if (item.satisfies !== undefined) {
-      test(`satisfies(${item.version}, ${item.satisfies})`, () => {
-        validate(
+      test(`satisfies(${item.version}, ${item.satisfies})`, async () => {
+        await validate(
           {
             INPUT_VERSION: item.version,
             INPUT_SATISFIES: item.satisfies
           },
-          (stdout: string) => {
+          async (githubOutput: FileResult) => {
+            const output = await readFile(githubOutput.name, 'utf8')
             const parsedVersion = parse(item.version)
 
             if (parsedVersion && item.satisfies?.trim() !== '') {
               if (satisfies(parsedVersion, item.satisfies!!)) {
-                expect(stdout).toContain(`::set-output name=satisfies::true`)
+                expect(output).toMatch(new RegExp(`satisfies<<.+${os.EOL}true${os.EOL}`))
               } else {
-                expect(stdout).toContain(`::set-output name=satisfies::false`)
+                expect(output).toMatch(new RegExp(`satisfies<<.+${os.EOL}false${os.EOL}`))
               }
             } else {
-              expect(stdout).not.toContain(`::set-output name=satisfies::`)
+              expect(output).not.toMatch(new RegExp(`satisfies<<.+${os.EOL}.+${os.EOL}`))
             }
           }
         )
@@ -215,26 +231,34 @@ describe('satisfies', () => {
 describe('inc', () => {
   data.forEach(item => {
     if (item.identifier !== undefined) {
-      test(`inc(${item.version}, ${item.identifier})`, () => {
-        validate(
+      test(`inc(${item.version}, ${item.identifier})`, async () => {
+        await validate(
           {
             INPUT_VERSION: item.version,
             INPUT_IDENTIFIER: item.identifier
           },
-          (stdout: string) => {
-            let identifier = undefined
+          async (githubOutput: FileResult) => {
+            const output = await readFile(githubOutput.name, 'utf8')
+            let identifier: string | undefined = undefined
 
             if (item.identifier?.trim() !== '') {
               identifier = item.identifier
             }
-
-            expect(stdout).toContain(`::set-output name=inc-major::${parse(item.version)?.inc('major', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-premajor::${parse(item.version)?.inc('premajor', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-minor::${parse(item.version)?.inc('minor', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-preminor::${parse(item.version)?.inc('preminor', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-patch::${parse(item.version)?.inc('patch', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-prepatch::${parse(item.version)?.inc('prepatch', identifier).format()}`)
-            expect(stdout).toContain(`::set-output name=inc-prerelease::${parse(item.version)?.inc('prerelease', identifier).format()}`)
+            expect(output).toMatch(new RegExp(`inc-major<<.+${os.EOL}${parse(item.version)?.inc('major', identifier).format()}${os.EOL}`))
+            expect(output).toMatch(
+              new RegExp(`inc-premajor<<.+${os.EOL}${parse(item.version)?.inc('premajor', identifier).format()}${os.EOL}`)
+            )
+            expect(output).toMatch(new RegExp(`inc-minor<<.+${os.EOL}${parse(item.version)?.inc('minor', identifier).format()}${os.EOL}`))
+            expect(output).toMatch(
+              new RegExp(`inc-preminor<<.+${os.EOL}${parse(item.version)?.inc('preminor', identifier).format()}${os.EOL}`)
+            )
+            expect(output).toMatch(new RegExp(`inc-patch<<.+${os.EOL}${parse(item.version)?.inc('patch', identifier).format()}${os.EOL}`))
+            expect(output).toMatch(
+              new RegExp(`inc-prepatch<<.+${os.EOL}${parse(item.version)?.inc('prepatch', identifier).format()}${os.EOL}`)
+            )
+            expect(output).toMatch(
+              new RegExp(`inc-prerelease<<.+${os.EOL}${parse(item.version)?.inc('prerelease', identifier).format()}${os.EOL}`)
+            )
           }
         )
       })

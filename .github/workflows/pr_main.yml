@@ -15,12 +15,12 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.sha }}
 
-      - run: node -p "'::set-output name=version::' + require('./package.json').version"
+      - run: node -p "'version=' + require('./package.json').version" >> $GITHUB_OUTPUT
         id: base-version
 
       - uses: actions/checkout@v3
 
-      - run: node -p "'::set-output name=version::' + require('./package.json').version"
+      - run: node -p "'version=' + require('./package.json').version" >> $GITHUB_OUTPUT
         id: new-version
 
       - uses: madhead/semver-utils@latest

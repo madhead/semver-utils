@@ -19,7 +19,7 @@ jobs:
         with:
           file_pattern: dist/**
 
-      - run: node -p "'::set-output name=version::' + require('./package.json').version"
+      - run: node -p "'version=' + require('./package.json').version" >> $GITHUB_OUTPUT
         id: version
 
       - uses: ./
