@@ -28,7 +28,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@types/semver": "^7.3.13",
-    "semver": "^7.4.0"
+    "semver": "^7.5.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.7",
