@@ -10,7 +10,7 @@ jobs:
     name: Default
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: npm install
       - run: npm run all
@@ -102,5 +102,5 @@ jobs:
     name: Validate actions typing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: krzema12/github-actions-typing@v1
