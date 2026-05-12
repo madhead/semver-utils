@@ -2,6 +2,7 @@
   "name": "semver-utils",
   "version": "5.0.0",
   "private": true,
+  "type": "module",
   "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
   "scripts": {
