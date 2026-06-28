@@ -42,7 +42,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.4.2",
     "jest-circus": "^30.4.2",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.2.0",
     "prettier": "3.8.3",
     "tmp": "^0.2.5",
     "ts-jest": "^29.4.9",
