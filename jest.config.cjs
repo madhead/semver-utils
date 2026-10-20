@@ -5,7 +5,7 @@ module.exports = {
   testMatch: ['**/*.test.ts'],
   testRunner: 'jest-circus/runner',
   transform: {
-    '^.+\\.ts$': ['ts-jest', { tsconfig: { types: ['node', 'jest'] } }]
+    '^.+\\.ts$': ['ts-jest', { tsconfig: { module: 'commonjs', moduleResolution: 'node10', types: ['node', 'jest'] } }]
   },
   verbose: true
 }
