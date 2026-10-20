@@ -1,9 +1,10 @@
 {
   "name": "semver-utils",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "description": "One-stop shop for working with semantic versions in your workflows",
   "main": "lib/main.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
@@ -26,7 +27,7 @@
   "author": "madhead <siarhei.krukau@gmail.com> (https://madhead.me)",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^2.0.3",
+    "@actions/core": "^3.0.1",
     "@types/semver": "^7.7.1",
     "semver": "^7.8.0"
   },
